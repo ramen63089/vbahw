@@ -1,0 +1,94 @@
+Sub tickervol()
+Dim ws As Worksheet
+Dim starting_ws As Worksheet
+Set starting_ws = ActiveSheet
+
+
+'Loop for each worksheet
+For Each ws In ThisWorkbook.Worksheets
+    ws.Activate
+
+
+
+' Set an initial variable for holding the stock ticker name
+  Dim Ticker_Name As String
+  Dim Stock_Initial As Double
+  Dim Stock_End As Double
+ Dim Stock_Final As Double
+ Dim Stock_Percent As Double
+  ' Set an initial variable for holding the total volume
+  Dim Stock_Total As Double
+  Stock_Total = 0
+Range("I1").Value = "Ticker"
+Range("J1").Value = "Yearly Change"
+Range("K1").Value = "Percent Change"
+Range("L1").Value = "Total Stock Volume"
+'Make sure format of percent change is set
+Range("K2:K500").NumberFormat = "0.00%"
+  ' Keep track of the location for ticket in the summary table
+  Dim Summary_Table_Row As Integer
+  Summary_Table_Row = 2
+
+  ' Loop through all entries
+  For i = 2 To 70926
+      If Cells(i, 1).Value <> Cells(i - 1, 1).Value Then
+      ' Set the Ticker name
+      Stock_Initial = Cells(i, 3).Value
+    End If
+    
+    ' Check if we are still within the same ticker, if it is not...
+    If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+
+      ' Set the Ticker name
+      Ticker_Name = Cells(i, 1).Value
+    
+    
+      ' Add to the Stock Total
+      Stock_Total = Stock_Total + Cells(i, 7).Value
+    
+      'Find Stock Final
+      Stock_End = Cells(i, 6).Value
+      'Calculate difference
+      Stock_Final = Stock_End - Stock_Initial
+      'Calculate percent
+      Stock_Percent = (Stock_Final / Stock_Initial)
+    
+    
+     'Add the
+      ' Print the Stock Ticker in the Summary Table
+      Range("I" & Summary_Table_Row).Value = Ticker_Name
+
+      ' Print the Stock Amount to the Summary Table
+      Range("L" & Summary_Table_Row).Value = Stock_Total
+
+    'Print the Difference
+    Range("J" & Summary_Table_Row).Value = Stock_Final
+    'Print the Percent
+    Range("K" & Summary_Table_Row).Value = Stock_Percent
+    
+    If Stock_Final > 0 Then
+     Range("K" & Summary_Table_Row).Interior.ColorIndex = 4
+     Else
+
+    Range("K" & Summary_Table_Row).Interior.ColorIndex = 3
+     End If
+     
+      ' Add one to the summary table row
+      Summary_Table_Row = Summary_Table_Row + 1
+      
+      ' Reset the Stock Total
+      Stock_Total = 0
+
+    ' If the cell immediately following a row is the same stock ticker...
+    Else
+
+      ' Add to the Stock Total
+      Stock_Total = Stock_Total + Cells(i, 7).Value
+    
+    End If
+
+  Next i
+Next
+End Sub
+
+
